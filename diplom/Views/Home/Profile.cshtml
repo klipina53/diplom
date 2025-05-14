@@ -4,60 +4,59 @@
 }
 
 <div class="container">
-    <h2>Ваш профиль</h2>
+    <h1>Профиль</h1>
+    <hr />
 
-    <div class="profile-info">
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Основная информация</h3>
-                <p><strong>Email:</strong> @Model.Email</p>
-                <p><strong>ФИО:</strong> @Model.FullName</p>
+    <div class="row">
+        <div class="col-md-6">
+            <h3>Личная информация</h3>
+            <dl class="row">
+                <dt class="col-sm-4">ФИО:</dt>
+                <dd class="col-sm-8">@Model.FullName</dd>
 
-                <form asp-action="UpdateProfile" method="post">
-                    <div class="form-group">
-                        <label for="weight">Вес (кг):</label>
-                        <input type="number" class="form-control" id="weight"
-                               name="weight" value="@(Model.Weight.HasValue ? Model.Weight.Value.ToString() : "")">
-                    </div>
-                    <div class="form-group">
-                        <label for="height">Рост (см):</label>
-                        <input type="number" class="form-control" id="height"
-                               name="height" value="@(Model.Height.HasValue ? Model.Height.Value.ToString() : "")">
-                    </div>
-                    <button type="submit" class="btn btn-primary">Обновить данные</button>
-                </form>
-            </div>
+                <dt class="col-sm-4">Email:</dt>
+                <dd class="col-sm-8">@Model.Email</dd>
 
-            <div class="col-md-6">
-                <h3>Абонемент</h3>
-                @if (!string.IsNullOrEmpty(Model.MembershipType))
+                @if (Model.Height.HasValue)
                 {
-                    <p><strong>Тип:</strong> @Model.MembershipType</p>
-                    <p><strong>Осталось посещений:</strong> @Model.RemainingVisits</p>
-                    <p><strong>Действителен до:</strong> @Model.MembershipEndDate?.ToShortDateString()</p>
+                    <dt class="col-sm-4">Рост:</dt>
+                    <dd class="col-sm-8">@Model.Height см</dd>
                 }
-                else
+
+                @if (Model.Weight.HasValue)
                 {
-                    <p>У вас нет активного абонемента</p>
-                    <a asp-controller="Membership" asp-action="Index" class="btn btn-success">
-                        Приобрести абонемент
-                    </a>
+                    <dt class="col-sm-4">Вес:</dt>
+                    <dd class="col-sm-8">@Model.Weight кг</dd>
                 }
-            </div>
+            </dl>
+        </div>
+
+        <div class="col-md-6">
+            <h3>Абонемент</h3>
+            @if (!string.IsNullOrEmpty(Model.MembershipType))
+            {
+                <dl class="row">
+                    <dt class="col-sm-4">Тип:</dt>
+                    <dd class="col-sm-8">@Model.MembershipType</dd>
+
+                    @if (Model.RemainingVisits.HasValue)
+                    {
+                        <dt class="col-sm-4">Осталось посещений:</dt>
+                        <dd class="col-sm-8">@Model.RemainingVisits</dd>
+                    }
+
+                    @if (Model.MembershipEndDate.HasValue)
+                    {
+                        <dt class="col-sm-4">Действует до:</dt>
+                        <dd class="col-sm-8">@Model.MembershipEndDate.Value.ToShortDateString()</dd>
+                    }
+                </dl>
+            }
+            else
+            {
+                <p>У вас нет активного абонемента</p>
+                <a asp-controller="Home" asp-action="Memberships" class="btn btn-primary">Купить абонемент</a>
+            }
         </div>
     </div>
 </div>
-
-<style>
-    .profile-info {
-        background: white;
-        padding: 20px;
-        border-radius: 10px;
-        box-shadow: 0 0 10px rgba(0,0,0,0.1);
-        margin-top: 20px;
-    }
-
-    .form-group {
-        margin-bottom: 15px;
-    }
-</style>

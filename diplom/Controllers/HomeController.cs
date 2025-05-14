@@ -1,9 +1,6 @@
 ﻿using diplom.Models;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace diplom.Controllers
 {
@@ -34,37 +31,21 @@ namespace diplom.Controllers
             return View(products);
         }
 
-        public IActionResult Memberships() => View();
-
-        private readonly UserManager<User> _userManager;
-
-        public HomeController(UserManager<User> userManager)
+        public IActionResult Memberships()
         {
-            _userManager = userManager;
+            var memberships = _db.MembershipTypes.ToList();
+            return View(memberships);
         }
 
-        public async Task<IActionResult> Profile()
+        public IActionResult Profile()
         {
-            var user = await _userManager.GetUserAsync(User);
-            if (user == null)
+            if (!User.Identity.IsAuthenticated)
             {
-                return RedirectToAction("Index");
+                return RedirectToAction("Login", "Account");
             }
 
+            var user = _db.Users.FirstOrDefault(u => u.UserName == User.Identity.Name);
             return View(user);
-        }
-        [HttpPost]
-        [HttpPost]
-        public async Task<IActionResult> UpdateProfile(int? weight, int? height)
-        {
-            var user = await _userManager.GetUserAsync(User);
-            if (user != null)
-            {
-                user.Weight = weight;
-                user.Height = height;
-                await _userManager.UpdateAsync(user);
-            }
-            return RedirectToAction("Profile");
         }
     }
 }

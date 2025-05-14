@@ -61,71 +61,211 @@
             }
 
         .form-container {
-            max-width: 400px;
+            max-width: 500px;
             margin: 2rem auto;
             background: #fff;
             padding: 2rem;
             border-radius: 1.5rem;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            transition: opacity 0.5s ease, transform 0.5s ease;
         }
 
             .form-container.hidden {
                 display: none;
             }
 
+        .form-row {
+            display: flex;
+            gap: 1rem;
+        }
+
+            .form-row .group {
+                flex: 1;
+            }
+
         .group {
-            margin-bottom: 1rem;
+            margin-bottom: 1.2rem;
         }
 
         .label {
             display: block;
             margin-bottom: 0.5rem;
-            font-weight: bold;
+            font-weight: 600;
+            color: #555;
         }
 
-        .input, .button {
+        .input {
             width: 100%;
             padding: 0.75rem;
             border-radius: 0.75rem;
-            border: 1px solid #ccc;
+            border: 1px solid #ddd;
             font-size: 1rem;
+            transition: border 0.3s ease;
         }
 
+            .input:focus {
+                border-color: #7e57c2;
+                outline: none;
+            }
+
         .button {
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.75rem;
             background: #7e57c2;
             color: white;
             font-weight: bold;
             border: none;
-            transition: background 0.3s ease;
             cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 1rem;
         }
 
             .button:hover {
                 background: #5e35b1;
             }
 
+        .checkbox-container {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
         main {
             max-width: 800px;
             margin: 3rem auto;
-            padding: 1rem;
+            padding: 2rem;
             text-align: center;
             background: #ffffffbb;
             backdrop-filter: blur(6px);
             border-radius: 1rem;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
         }
 
         .auth-status {
-            margin-bottom: 1rem;
+            margin-bottom: 1.5rem;
             font-weight: bold;
+            text-align: center;
+            font-size: 1.1rem;
         }
 
         .error-message {
-            color: red;
+            color: #d32f2f;
             font-weight: bold;
             margin-bottom: 1rem;
+            text-align: center;
+            padding: 0.5rem;
+            background: #ffebee;
+            border-radius: 0.5rem;
+        }
+
+        .profile-link {
+            display: block;
+            margin-top: 1rem;
+            text-align: center;
         }
     </style>
+</head>
+<body>
+    <header>
+        <h1>@ViewData["Title"]</h1>
+        @if (!isAuth)
+        {
+            <div class="tabs">
+                <button id="btn-signin" class="tab-btn active" onclick="switchTab('signin')">Авторизация</button>
+                <button id="btn-signup" class="tab-btn" onclick="switchTab('signup')">Регистрация</button>
+            </div>
+        }
+    </header>
+
+    @if (isAuth)
+    {
+        <div class="form-container">
+            <p class="auth-status">Вы вошли как: @email</p>
+            <form asp-controller="Account" asp-action="Logout" method="post">
+                <button class="button" type="submit">Выйти</button>
+            </form>
+            <a class="button profile-link" href="/Home/Profile">Перейти в профиль</a>
+        </div>
+    }
+    else
+    {
+        <div id="signin-form" class="form-container">
+            @if (TempData["LoginError"] != null)
+            {
+                <p class="error-message">@TempData["LoginError"]</p>
+            }
+            <form asp-controller="Account" asp-action="Login" method="post">
+                <div class="group">
+                    <label class="label" for="email">Email</label>
+                    <input id="email" name="email" type="email" class="input" placeholder="Введите ваш email" required>
+                </div>
+                <div class="group">
+                    <label class="label" for="password">Пароль</label>
+                    <input id="password" name="password" type="password" class="input" placeholder="Введите пароль" required>
+                </div>
+                <div class="checkbox-container">
+                    <input id="rememberMe" name="rememberMe" type="checkbox">
+                    <label for="rememberMe">Запомнить меня</label>
+                </div>
+                <div class="group">
+                    <button type="submit" class="button">Войти</button>
+                </div>
+            </form>
+        </div>
+
+        <div id="signup-form" class="form-container hidden">
+            @if (TempData["RegisterError"] != null)
+            {
+                <p class="error-message">@TempData["RegisterError"]</p>
+            }
+            <form asp-controller="Account" asp-action="Register" method="post">
+                <div class="form-row">
+                    <div class="group">
+                        <label class="label" for="fullName">ФИО</label>
+                        <input id="fullName" name="fullName" type="text" class="input" placeholder="Иванов Иван Иванович" required>
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label class="label" for="regEmail">Email</label>
+                    <input id="regEmail" name="email" type="email" class="input" placeholder="example@mail.ru" required>
+                </div>
+
+                <div class="form-row">
+                    <div class="group">
+                        <label class="label" for="regPassword">Пароль</label>
+                        <input id="regPassword" name="password" type="password" class="input" placeholder="Не менее 6 символов" required>
+                    </div>
+                    <div class="group">
+                        <label class="label" for="confirmPassword">Подтверждение</label>
+                        <input id="confirmPassword" name="confirmPassword" type="password" class="input" placeholder="Повторите пароль" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="group">
+                        <label class="label" for="weight">Вес (кг)</label>
+                        <input id="weight" name="weight" type="number" class="input" placeholder="70">
+                    </div>
+                    <div class="group">
+                        <label class="label" for="height">Рост (см)</label>
+                        <input id="height" name="height" type="number" class="input" placeholder="175">
+                    </div>
+                </div>
+
+                <div class="group">
+                    <button type="submit" class="button">Зарегистрироваться</button>
+                </div>
+            </form>
+        </div>
+    }
+
+    <main>
+        <h2>Наши услуги</h2>
+        <p>Мы предлагаем индивидуальные и групповые тренировки с профессиональными тренерами, а также абонементы для самостоятельных занятий.</p>
+        <p>Начните свой путь к здоровому образу жизни уже сегодня!</p>
+    </main>
 
     <script>
         function switchTab(tabName) {
@@ -148,96 +288,15 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-        @if (!isAuth)
+        @if (!isAuth && TempData["ShowRegister"] != null)
+        {
+            <text>switchTab("signup"); </text>
+        }
+        else if (!isAuth)
         {
             <text>switchTab("signin"); </text>
         }
                 });
     </script>
-</head>
-<body>
-
-    <header>
-        <h1>@ViewData["Title"]</h1>
-        @if (!isAuth)
-        {
-            <div class="tabs">
-                <button id="btn-signin" class="tab-btn" onclick="switchTab('signin')">Авторизация</button>
-                <button id="btn-signup" class="tab-btn" onclick="switchTab('signup')">Регистрация</button>
-            </div>
-        }
-    </header>
-
-    @if (isAuth)
-    {
-        <div class="form-container">
-            <p class="auth-status">Вы вошли как: @email</p>
-            <form asp-controller="Account" asp-action="Logout" method="post">
-                <button class="button" type="submit">Выйти</button>
-            </form>
-            <a class="button" href="/Home/Profile" style="margin-top: 10px; display: inline-block;">Перейти в профиль</a>
-        </div>
-    }
-    else
-    {
-        <div id="signin-form" class="form-container">
-            @if (TempData["LoginError"] != null)
-            {
-                <p class="error-message">@TempData["LoginError"]</p>
-            }
-            <form asp-controller="Account" asp-action="Login" method="post">
-                <div class="group">
-                    <label class="label" for="user">Email</label>
-                    <input id="user" name="email" type="text" class="input" placeholder="Введите ваш email" required>
-                </div>
-                <div class="group">
-                    <label class="label" for="pass">Пароль</label>
-                    <input id="pass" name="password" type="password" class="input" placeholder="Введите пароль" required>
-                </div>
-                <div class="group">
-                    <input id="check" name="rememberMe" type="checkbox">
-                    <label for="check"> Запомнить меня</label>
-                </div>
-                <div class="group">
-                    <button type="submit" class="button">Войти</button>
-                </div>
-            </form>
-        </div>
-
-        <div id="signup-form" class="form-container hidden">
-            @if (TempData["RegisterError"] != null)
-            {
-                <p class="error-message">@TempData["RegisterError"]</p>
-            }
-            <form asp-controller="Account" asp-action="Register" method="post">
-                <div class="group">
-                    <label class="label" for="user-signup">Email</label>
-                    <input id="user-signup" name="email" type="text" class="input" placeholder="Введите ваш email" required>
-                </div>
-                <div class="group">
-                    <label class="label" for="pass-signup">Пароль</label>
-                    <input id="pass-signup" name="password" type="password" class="input" placeholder="Введите пароль" required>
-                </div>
-                <div class="group">
-                    <label class="label" for="pass-repeat">Повторите пароль</label>
-                    <input id="pass-repeat" name="confirmPassword" type="password" class="input" placeholder="Повторите пароль" required>
-                </div>
-                <div class="group">
-                    <label class="label" for="fullname">ФИО</label>
-                    <input id="fullname" name="fullname" type="text" class="input" placeholder="Введите ваше ФИО" required>
-                </div>
-                <div class="group">
-                    <button type="submit" class="button">Зарегистрироваться</button>
-                </div>
-            </form>
-        </div>
-    }
-
-    <main>
-        <h2>Наши услуги</h2>
-        <p>Мы предлагаем широкий спектр спортивных услуг для всех возрастов и уровней подготовки. Присоединяйтесь к нам и начните свой путь к здоровому образу жизни!</p>
-        <p>Наши тренеры — это профессионалы с большим опытом, готовые помочь вам достичь ваших целей. Независимо от ваших предпочтений, у нас есть всё необходимое для вашего успеха!</p>
-    </main>
-
 </body>
 </html>

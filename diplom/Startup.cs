@@ -3,10 +3,9 @@ using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.AspNetCore.Http;
-using diplom.Models;
 using Microsoft.EntityFrameworkCore;
-using System;
+using diplom.Models;
+using Microsoft.AspNetCore.Identity;
 
 namespace diplom
 {
@@ -21,18 +20,29 @@ namespace diplom
 
         public void ConfigureServices(IServiceCollection services)
         {
-            // Добавьте эту конфигурацию перед другими сервисами
-            services.AddDistributedMemoryCache(); // Требуется для работы сессий
-            services.AddSession(options =>
-            {
-                options.IdleTimeout = TimeSpan.FromMinutes(20); // Время жизни сессии
-                options.Cookie.HttpOnly = true;
-                options.Cookie.IsEssential = true;
-            });
+            services.AddDbContext<AppDbContext>(options =>
+                options.UseSqlServer(
+                    Configuration.GetConnectionString("DefaultConnection")));
 
-            // Остальные сервисы...
+            services.AddDefaultIdentity<User>(options => {
+                options.Password.RequireDigit = false;
+                options.Password.RequiredLength = 6;
+                options.Password.RequireNonAlphanumeric = false;
+                options.Password.RequireUppercase = false;
+            })
+            .AddEntityFrameworkStores<AppDbContext>();
+
             services.AddControllersWithViews();
             services.AddRazorPages();
+
+            services.AddSession();
+            services.ConfigureApplicationCookie(options =>
+            {
+                options.LoginPath = "/Account/Login";
+                options.AccessDeniedPath = "/Account/AccessDenied";
+                options.LogoutPath = "/Account/Logout";
+                options.ReturnUrlParameter = "returnUrl";
+            });
         }
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
@@ -40,8 +50,7 @@ namespace diplom
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                // Замените UseDatabaseErrorPage на:
-                app.UseMigrationsEndPoint();
+                app.UseDatabaseErrorPage();
             }
             else
             {
@@ -49,16 +58,15 @@ namespace diplom
                 app.UseHsts();
             }
 
-
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-            app.UseRouting();
 
-            // Добавьте эту строку перед UseAuthentication
-            app.UseSession();
+            app.UseRouting();
 
             app.UseAuthentication();
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.UseEndpoints(endpoints =>
             {
