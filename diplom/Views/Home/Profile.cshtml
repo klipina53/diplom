@@ -1,5 +1,63 @@
-﻿@{
+﻿@model diplom.Models.User
+@{
     ViewData["Title"] = "Профиль";
 }
-<h2>Добро пожаловать, @ViewBag.FullName!</h2>
-<p>Это ваша страница профиля.</p>
+
+<div class="container">
+    <h2>Ваш профиль</h2>
+
+    <div class="profile-info">
+        <div class="row">
+            <div class="col-md-6">
+                <h3>Основная информация</h3>
+                <p><strong>Email:</strong> @Model.Email</p>
+                <p><strong>ФИО:</strong> @Model.FullName</p>
+
+                <form asp-action="UpdateProfile" method="post">
+                    <div class="form-group">
+                        <label for="weight">Вес (кг):</label>
+                        <input type="number" class="form-control" id="weight"
+                               name="weight" value="@(Model.Weight.HasValue ? Model.Weight.Value.ToString() : "")">
+                    </div>
+                    <div class="form-group">
+                        <label for="height">Рост (см):</label>
+                        <input type="number" class="form-control" id="height"
+                               name="height" value="@(Model.Height.HasValue ? Model.Height.Value.ToString() : "")">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Обновить данные</button>
+                </form>
+            </div>
+
+            <div class="col-md-6">
+                <h3>Абонемент</h3>
+                @if (!string.IsNullOrEmpty(Model.MembershipType))
+                {
+                    <p><strong>Тип:</strong> @Model.MembershipType</p>
+                    <p><strong>Осталось посещений:</strong> @Model.RemainingVisits</p>
+                    <p><strong>Действителен до:</strong> @Model.MembershipEndDate?.ToShortDateString()</p>
+                }
+                else
+                {
+                    <p>У вас нет активного абонемента</p>
+                    <a asp-controller="Membership" asp-action="Index" class="btn btn-success">
+                        Приобрести абонемент
+                    </a>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .profile-info {
+        background: white;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        margin-top: 20px;
+    }
+
+    .form-group {
+        margin-bottom: 15px;
+    }
+</style>
