@@ -1,0 +1,18 @@
+﻿@{
+    ViewData["Title"] = "Абонементы";
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewData["Title"]</title>
+</head>
+<body>
+    <h1>Абонементы</h1>
+    <ul>
+        <li><a asp-controller="Membership" asp-action="Purchase" asp-route-type="individual">Индивидуальные тренировки</a></li>
+        <li><a asp-controller="Membership" asp-action="Purchase" asp-route-type="grouped">Групповые тренировки</a></li>
+        <li><a asp-controller="Membership" asp-action="Purchase" asp-route-type="without_trainer">Без тренера (месяц)</a></li>
+    </ul>
+</body>
+</html>

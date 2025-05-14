@@ -1,0 +1,26 @@
+﻿@{
+    ViewData["Title"] = "Личный кабинет";
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewData["Title"]</title>
+    <link rel="stylesheet" href="~/css/style.css" />
+</head>
+<body>
+    <header>
+        <nav>
+            <a href="/Home/Profile">Профиль</a>
+            <a href="/Home/Trainers">Тренеры</a>
+            <a href="/Home/Products">Магазин</a>
+            <a href="/Home/Memberships">Абонементы</a>
+            <a href="/Account/Logout">Выход</a>
+        </nav>
+    </header>
+    <main>
+        <h2>Ваши разделы</h2>
+        <p>Выберите раздел из меню, чтобы продолжить.</p>
+    </main>
+</body>
+</html>

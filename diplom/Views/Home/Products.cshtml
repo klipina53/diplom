@@ -1,0 +1,47 @@
+﻿@using diplom.Models
+@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Товары";
+}
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>@ViewData["Title"]</title>
+    <style>
+        .product {
+            display: flex;
+            align-items: center;
+            margin: 10px 0;
+        }
+
+            .product img {
+                max-width: 100px;
+                margin-right: 10px;
+            }
+
+        .product-info {
+            display: flex;
+            flex-direction: column;
+        }
+    </style>
+</head>
+<body>
+    <h1>Товары</h1>
+    <ul>
+        @foreach (var product in Model)
+        {
+            <li class="product">
+                <img src="@product.Image" alt="@product.Name" />
+                <div class="product-info">
+                    <span>@product.Name - @product.Price руб.</span>
+                    <form asp-controller="Order" asp-action="Create" method="post">
+                        <input type="hidden" name="productId" value="@product.Id" />
+                        <button type="submit">Заказать</button>
+                    </form>
+                </div>
+            </li>
+        }
+    </ul>
+</body>
+</html>
